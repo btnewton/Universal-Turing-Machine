@@ -23,22 +23,23 @@ public class State {
         transitions.add(transition);
     }
 
-    public Transition getTransition(int character) {
+    public Transition getTransition(char character) {
         for (Transition transition : transitions) {
             if (transition.getAcceptCharacter() == character) {
                 return transition;
             }
         }
 
-        // TODO check if accept state and update if necessary?
+        // Halt state
         if (isAcceptState()) {
-            System.out.println("ACCEPTED!");
+            // Accepted!
+            program.setStatus(Program.Status.Accepted);
+            return null;
+        } else {
+            // Rejected!
+            program.setStatus(Program.Status.Rejected);
+            return null;
         }
-
-
-        // Rejected!
-        program.setStatus(Program.Status.Rejected);
-        return null;
     }
 
     public int getId() {

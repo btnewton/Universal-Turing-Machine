@@ -9,19 +9,19 @@ import com.company.state.State;
  */
 public class Transition {
 
-    private int acceptCharacter;
-    private int writeCharacter;
+    private char acceptCharacter;
+    private char writeCharacter;
     private ReadWriteHead.Direction move;
     private State nextState;
 
-    public Transition(int acceptCharacter, int writeCharacter, ReadWriteHead.Direction move, State nextState) {
+    public Transition(char acceptCharacter, char writeCharacter, ReadWriteHead.Direction move, State nextState) {
         this.acceptCharacter = acceptCharacter;
         this.writeCharacter = writeCharacter;
         this.move = move;
         this.nextState = nextState;
     }
 
-    public int getWriteCharacter() {
+    public char getWriteCharacter() {
         return writeCharacter;
     }
 
@@ -33,7 +33,7 @@ public class Transition {
         return move;
     }
 
-    public int getAcceptCharacter() {
+    public char getAcceptCharacter() {
         return acceptCharacter;
     }
 

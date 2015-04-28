@@ -1,5 +1,6 @@
 package com.company.program;
 
+import com.company.machine.CharacterNotInAlphabetException;
 import com.company.machine.ReadWriteHead;
 import com.company.machine.Tape;
 import com.company.state.State;
@@ -32,10 +33,18 @@ public class Program {
     public Program() {}
 
 
-    public void run(ArrayList<Integer> input) {
-        status = Status.Working;
+    public void run(ArrayList<Character> input) {
+        ReadWriteHead readWriteHead;
 
-        ReadWriteHead readWriteHead = new ReadWriteHead(new Tape(input));
+
+        try {
+            readWriteHead = new ReadWriteHead(new Tape(input));
+            status = Status.Working;
+        } catch (CharacterNotInAlphabetException cna) {
+            readWriteHead = null;
+            System.err.println(cna.getMessage());
+            status = Status.Rejected;
+        }
 
         while(status == Status.Working) {
             Transition transition = state.getTransition(readWriteHead.read());
@@ -50,7 +59,10 @@ public class Program {
         }
 
         System.out.println(statusToString(status));
-        System.out.println(readWriteHead.getTapeString());
+
+        if (readWriteHead != null) {
+            System.out.println(readWriteHead.getTapeString());
+        }
 
         // Reset status
         status = Status.Waiting;

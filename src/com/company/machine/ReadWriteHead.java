@@ -10,8 +10,6 @@ public class ReadWriteHead {
         Right
     }
 
-    public static final int BLANK = -1;
-
     private Tape tape;
     private int position;
 
@@ -29,11 +27,11 @@ public class ReadWriteHead {
         }
     }
 
-    public int read() {
+    public char read() {
         return tape.get(position);
     }
 
-    public void write(int newCharacter) {
+    public void write(char newCharacter) {
         tape.set(position, newCharacter);
     }
 
