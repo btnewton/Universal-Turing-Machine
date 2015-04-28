@@ -3,25 +3,38 @@ package com.company.machine;
 import java.util.ArrayList;
 
 /**
- * This tape
+ * Tape simulates the Turing Machine Tape. This is also where the input language and blank symbol is defined.
+ * The data structure holding the tape will expand as necessary to simulate infinite space. To simulate space in both
+ * directions (from the starting point) there are two tapes each corresponding to one direction.  As far as all
+ * accessors of the Tape (mainly the read-write head) are concerned, the tape is one continuous object.
+ *
+ * When setting the initial tape values to the input, the tape will validate all characters within the input to ensure
+ * that they exist in the input alphabet.
  */
 public class Tape {
 
-    // Define tape alphabet
+    // Define tape alphabet (Binary)
     private static final char[] ALPHABET = new char[]{'0', '1'};
     public static final char BLANK = '_';
 
-    private ArrayList<Character> tape;
+    // Positive tape is used to simulate tape in the positive direction
+    private ArrayList<Character> positiveTape;
+
+    // Negative tape is used to simulate tape in the negative direction
+    private ArrayList<Character> negativeTape;
 
     /**
-     * Validates input and sets it on the tape if it is valid
+     * Validates input and sets it on the positiveTape if it is valid
      *
-     * @param input  new tape
-     * @throws CharacterNotInAlphabetException  if any character in the given tape is not included in ALPHABET
+     * @param input  initial tape values
+     * @throws CharacterNotInAlphabetException  if any character in the given input is not included in defined ALPHABET
      */
     public Tape(ArrayList<Character> input) throws CharacterNotInAlphabetException {
         if (validAlphabet(input)) {
-            tape = input;
+            positiveTape = input;
+
+            // Set up negative positiveTape
+            negativeTape = new ArrayList<Character>();
         } else {
             throw new CharacterNotInAlphabetException("An invalid character was supplied as input");
         }
@@ -36,20 +49,31 @@ public class Tape {
      * @return          character at given position
      */
     public char get(int position) {
-        if (position == tape.size()) {
-            tape.add(Tape.BLANK);
+        if (position == positiveTape.size()) {
+            positiveTape.add(BLANK);
         }
-        return tape.get(position);
+
+        if (position < 0) {
+            // Flip position sign
+            position *= -1;
+            if (position == negativeTape.size()) {
+                negativeTape.add(BLANK);
+            }
+
+            return negativeTape.get(position);
+        } else {
+            return positiveTape.get(position);
+        }
     }
 
     /**
      * Sets the character at the position to newCharacter
      *
-     * @param position      position on tape to update
+     * @param position      position on positiveTape to update
      * @param newCharacter  character to write
      */
     public void set(int position, char newCharacter) {
-        tape.set(position, newCharacter);
+        positiveTape.set(position, newCharacter);
     }
 
     /**
@@ -58,13 +82,20 @@ public class Tape {
      * @return the tape as a string
      */
     public String toString() {
-        String tapeString = "| ";
+        String tapeString = "...| ";
 
-        for (char character : tape) {
+        if (negativeTape.size() > 0) {
+            for (char character : negativeTape) {
+                tapeString += character + " | ";
+            }
+            tapeString = tapeString.substring(0, tapeString.length() - 1);
+        }
+
+        for (char character : positiveTape) {
             tapeString += character + " | ";
         }
 
-        return tapeString.substring(0, tapeString.length() - 1);
+        return tapeString.substring(0, tapeString.length() - 1) + "...";
     }
 
     /**

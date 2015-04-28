@@ -1,7 +1,7 @@
 package com.company.machine;
 
 /**
- * Created by brandt on 4/28/15.
+ * This exception is to be thrown when the an invalid input character is found on the tape
  */
 public class CharacterNotInAlphabetException extends Exception {
 

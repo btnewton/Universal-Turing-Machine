@@ -50,14 +50,6 @@ public class State {
         return "q" + id;
     }
 
-    public void debug() {
-        System.out.println(this + " transitions to:");
-
-        for (Transition transition : transitions) {
-            System.out.println("\t" + transition);
-        }
-    }
-
     protected boolean isAcceptState() {
         return false;
     }

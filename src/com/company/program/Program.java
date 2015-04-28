@@ -58,7 +58,9 @@ public class Program {
             }
         }
 
-        System.out.println(statusToString(status));
+        System.out.println("+------------------------");
+        System.out.println("|\tSTATUS: " + statusToString(status));
+        System.out.println("+------------------------");
 
         if (readWriteHead != null) {
             System.out.println(readWriteHead.getTapeString());

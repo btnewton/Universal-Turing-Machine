@@ -11,6 +11,6 @@ public class Main {
     public static void main(String[] args) {
 
         SubtractionProgram subtractionProgram = new SubtractionProgram();
-        subtractionProgram.run(6, 0);
+        subtractionProgram.run(9, 4);
     }
 }
