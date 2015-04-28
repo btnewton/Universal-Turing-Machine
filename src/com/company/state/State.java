@@ -31,6 +31,9 @@ public class State {
         }
 
         // TODO check if accept state and update if necessary?
+        if (isAcceptState()) {
+            System.out.println("ACCEPTED!");
+        }
 
 
         // Rejected!
@@ -52,5 +55,9 @@ public class State {
         for (Transition transition : transitions) {
             System.out.println("\t" + transition);
         }
+    }
+
+    protected boolean isAcceptState() {
+        return false;
     }
 }

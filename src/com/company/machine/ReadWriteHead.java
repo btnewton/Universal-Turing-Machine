@@ -10,11 +10,14 @@ public class ReadWriteHead {
         Right
     }
 
+    public static final int BLANK = -1;
+
     private Tape tape;
     private int position;
 
     public ReadWriteHead(Tape tape) {
         this.tape = tape;
+        position = 0;
     }
 
     // TODO throw out of bounds exceptions?
@@ -40,5 +43,9 @@ public class ReadWriteHead {
         } else {
             return "right";
         }
+    }
+
+    public String getTapeString() {
+        return tape.toString();
     }
 }
