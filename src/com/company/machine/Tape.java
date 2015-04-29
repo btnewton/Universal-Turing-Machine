@@ -1,5 +1,7 @@
 package com.company.machine;
 
+import com.company.util.TwoWayArrayList;
+
 import java.util.ArrayList;
 
 /**
@@ -18,26 +20,26 @@ public class Tape {
     public static final char BLANK = '_';
 
     // Positive tape is used to simulate tape in the positive direction
-    private ArrayList<Character> positiveTape;
+    private TwoWayArrayList<Character> tape;
 
-    // Negative tape is used to simulate tape in the negative direction
-    private ArrayList<Character> negativeTape;
+    public Tape(ArrayList<Character> input, char defaultCharacter) throws CharacterNotInAlphabetException {
+        if (validAlphabet(input)) {
+            tape = new TwoWayArrayList<Character>(input);
+            tape.setDefaultValue(defaultCharacter);
+        } else {
+            throw new CharacterNotInAlphabetException("An invalid character was supplied as input");
+        }
+    }
 
     /**
-     * Validates input and sets it on the positiveTape if it is valid
+     * Validates input and sets it on the positiveTape if it is valid.  Sets BLANK as the default value to be returned for
+     * all accessed cells that have not been set.
      *
      * @param input  initial tape values
      * @throws CharacterNotInAlphabetException  if any character in the given input is not included in defined ALPHABET
      */
     public Tape(ArrayList<Character> input) throws CharacterNotInAlphabetException {
-        if (validAlphabet(input)) {
-            positiveTape = input;
-
-            // Set up negative positiveTape
-            negativeTape = new ArrayList<Character>();
-        } else {
-            throw new CharacterNotInAlphabetException("An invalid character was supplied as input");
-        }
+        this(input, BLANK);
     }
 
     /**
@@ -49,21 +51,8 @@ public class Tape {
      * @return          character at given position
      */
     public char get(int position) {
-        if (position == positiveTape.size()) {
-            positiveTape.add(BLANK);
-        }
-
-        if (position < 0) {
-            // Flip position sign
-            position *= -1;
-            if (position == negativeTape.size()) {
-                negativeTape.add(BLANK);
-            }
-
-            return negativeTape.get(position);
-        } else {
-            return positiveTape.get(position);
-        }
+        char value = tape.get(position);
+        return value;
     }
 
     /**
@@ -73,7 +62,7 @@ public class Tape {
      * @param newCharacter  character to write
      */
     public void set(int position, char newCharacter) {
-        positiveTape.set(position, newCharacter);
+        tape.set(position, newCharacter);
     }
 
     /**
@@ -84,15 +73,10 @@ public class Tape {
     public String toString() {
         String tapeString = "...| ";
 
-        if (negativeTape.size() > 0) {
-            for (char character : negativeTape) {
-                tapeString += character + " | ";
-            }
-            tapeString = tapeString.substring(0, tapeString.length() - 1);
-        }
+        Character[] output = tape.toArray(new Character[tape.size()]);
 
-        for (char character : positiveTape) {
-            tapeString += character + " | ";
+        for (Character c : output) {
+            tapeString += c + " | ";
         }
 
         return tapeString.substring(0, tapeString.length() - 1) + "...";
@@ -126,5 +110,21 @@ public class Tape {
             }
         }
         return false;
+    }
+
+    /**
+     * Counts the occurrences of a character in the tape.
+     * @param targetChar    character to be counted
+     * @return              occurrences of character
+     */
+    public int countCharcter(char targetChar) {
+        Character[] chars = tape.toArray(new Character[tape.size()]);
+        int counter = 0;
+        for (Character c : chars) {
+            if (c == targetChar) {
+                counter++;
+            }
+        }
+        return counter;
     }
 }

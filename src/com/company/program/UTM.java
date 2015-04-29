@@ -8,11 +8,12 @@ import com.company.state.Transition;
 import com.sun.xml.internal.ws.api.pipe.FiberContextSwitchInterceptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by brandt on 4/27/15.
  */
-public class Program {
+public class UTM {
 
     public static enum Status {
         Rejected,
@@ -23,51 +24,82 @@ public class Program {
 
     private Status status;
     private State state;
+    private Tape tape;
 
-    public Program(State state) {
-        // Has not started and is not working yet
+    public UTM(State M, char w) {
         status = Status.Waiting;
-        this.state = state;
-    }
-
-    public Program() {}
-
-
-    public void run(ArrayList<Character> input) {
-        ReadWriteHead readWriteHead;
-
+        state = M;
+        state.setUTM(this);
 
         try {
-            readWriteHead = new ReadWriteHead(new Tape(input));
-            status = Status.Working;
-        } catch (CharacterNotInAlphabetException cna) {
-            readWriteHead = null;
-            System.err.println(cna.getMessage());
-            status = Status.Rejected;
+            tape = new Tape(new ArrayList<Character>(Arrays.asList(new Character[]{w})), w);
+            run();
+        } catch (CharacterNotInAlphabetException e) {
+            e.printStackTrace();
         }
+    }
+
+    public UTM(State M, Character[] w) {
+        // Has not started and is not working yet
+        status = Status.Waiting;
+        state = M;
+        state.setUTM(this);
+
+        try {
+            tape = new Tape(new ArrayList<Character>(Arrays.asList(w)));
+            run();
+        } catch (CharacterNotInAlphabetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public UTM() {
+        status = Status.Waiting;
+        state = null;
+    }
+
+    private void run() {
+        ReadWriteHead readWriteHead;
+        int transitionCounter = 0;
+
+        readWriteHead = new ReadWriteHead(tape);
+        status = Status.Working;
 
         while(status == Status.Working) {
-            Transition transition = state.getTransition(readWriteHead.read());
+
+            Transition transition = null;
+
+            try {
+                 transition = state.getTransition(readWriteHead.read());
+            } catch (NullPointerException npe) {
+                status = Status.Accepted;
+            }
 
             if (transition != null) {
                 readWriteHead.write(transition.getWriteCharacter());
                 readWriteHead.moveHead(transition.getMove());
 
                 state = transition.getNextState();
-                System.out.println("Moving to: " + transition);
+                transitionCounter++;
             }
         }
 
+        outputResults(readWriteHead, transitionCounter);
+
+        // Reset status
+        status = Status.Waiting;
+    }
+
+    public void outputResults(ReadWriteHead readWriteHead, int transitionCounter) {
         System.out.println("+------------------------");
         System.out.println("|\tSTATUS: " + statusToString(status));
         System.out.println("+------------------------");
 
         if (readWriteHead != null) {
-            System.out.println(readWriteHead.getTapeString());
+            System.out.println("The TM transitioned " + transitionCounter + " times!");
+            System.out.println(tape.toString());
         }
 
-        // Reset status
-        status = Status.Waiting;
     }
 
     public static String statusToString(Status status) {
@@ -93,5 +125,9 @@ public class Program {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Tape getTape() {
+        return tape;
     }
 }

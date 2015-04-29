@@ -1,22 +1,39 @@
 package com.company.state;
 
-import com.company.program.Program;
+import com.company.program.UTM;
 
 import java.util.ArrayList;
 
 /**
- * Created by brandt on 4/27/15.
+ *
  */
 public class State {
 
     private int id;
-    private Program program;
+    private UTM utm;
     private ArrayList<Transition> transitions;
 
-    public State(int id, Program program) {
+    /**
+     * @param id    id of state (should be unique)
+     */
+    public State(int id) {
         this.id = id;
-        this.program = program;
+        utm = null;
         transitions = new ArrayList<Transition>();
+    }
+
+    /**
+     * Sets the State's UTM which will trace to all of its child UTMs
+     * @param utm
+     */
+    public void setUTM(UTM utm) {
+        if (this.utm == null) {
+            this.utm = utm;
+            for (Transition transition : transitions) {
+                if (transition.getNextState() != null)
+                    transition.getNextState().setUTM(utm);
+            }
+        }
     }
 
     public void addTransition(Transition transition) {
@@ -33,11 +50,11 @@ public class State {
         // Halt state
         if (isAcceptState()) {
             // Accepted!
-            program.setStatus(Program.Status.Accepted);
+            utm.setStatus(UTM.Status.Accepted);
             return null;
         } else {
             // Rejected!
-            program.setStatus(Program.Status.Rejected);
+            utm.setStatus(UTM.Status.Rejected);
             return null;
         }
     }

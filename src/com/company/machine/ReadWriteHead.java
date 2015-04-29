@@ -64,10 +64,7 @@ public class ReadWriteHead {
         }
     }
 
-    /**
-     * @return Tape's toString method
-     */
-    public String getTapeString() {
-        return tape.toString();
+    public Tape getTape() {
+        return tape;
     }
 }
