@@ -3,7 +3,7 @@ package com.company.state;
 import com.company.program.UTM;
 
 /**
- * Created by brandt on 4/27/15.
+ * Entering this state will end the machine's process
  */
 public class AcceptState extends State {
 

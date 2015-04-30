@@ -5,7 +5,7 @@ import com.company.program.UTM;
 import java.util.ArrayList;
 
 /**
- *
+ *  Structure to define a state in a Turing Machine
  */
 public class State {
 
@@ -36,10 +36,19 @@ public class State {
         }
     }
 
+    /**
+     * Adds a transition to the State
+     * @param transition
+     */
     public void addTransition(Transition transition) {
         transitions.add(transition);
     }
 
+    /**
+     * Returns the transition function corresponding to the given character
+     * @param character character transitioning from
+     * @return          transition function for given character
+     */
     public Transition getTransition(char character) {
         for (Transition transition : transitions) {
             if (transition.getAcceptCharacter() == character) {
@@ -57,10 +66,6 @@ public class State {
             utm.setStatus(UTM.Status.Rejected);
             return null;
         }
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String toString() {

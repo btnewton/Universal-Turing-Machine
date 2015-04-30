@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by brandt on 4/27/15.
+ * UTM is a Universal Turing Machine that accepts an arbitrary number of states and input length.
  */
 public class UTM {
 
@@ -26,6 +26,11 @@ public class UTM {
     private State state;
     private Tape tape;
 
+    /**
+     * Creates a new UTM with TM M and a tape filled with w
+     * @param M TM
+     * @param w universal tape character
+     */
     public UTM(State M, char w) {
         status = Status.Waiting;
         state = M;
@@ -39,6 +44,12 @@ public class UTM {
         }
     }
 
+    /**
+     * Creates a new UTM with TM M and string (character array) w
+     *
+     * @param M TM
+     * @param w input string
+     */
     public UTM(State M, Character[] w) {
         // Has not started and is not working yet
         status = Status.Waiting;
@@ -53,11 +64,9 @@ public class UTM {
         }
     }
 
-    public UTM() {
-        status = Status.Waiting;
-        state = null;
-    }
-
+    /**
+     * Runs the TM
+     */
     private void run() {
         ReadWriteHead readWriteHead;
         int transitionCounter = 0;
@@ -68,6 +77,11 @@ public class UTM {
         while(status == Status.Working) {
 
             Transition transition = null;
+
+            // Output to show machine is running on potentially divergent TMs
+            if (transitionCounter % 5000000 == 0) {
+                System.out.println(transitionCounter + ": " + tape.toString());
+            }
 
             try {
                  transition = state.getTransition(readWriteHead.read());
@@ -84,24 +98,31 @@ public class UTM {
             }
         }
 
-        outputResults(readWriteHead, transitionCounter);
+        outputResults(transitionCounter);
 
         // Reset status
         status = Status.Waiting;
     }
 
-    public void outputResults(ReadWriteHead readWriteHead, int transitionCounter) {
-        System.out.println("+------------------------");
+    /**
+     * Outputs the status of the TM and, the number of transitions it has made and the tape
+     * @param transitionCounter transition count
+     */
+    public void outputResults(int transitionCounter) {
+        System.out.println("\n+------------------------");
         System.out.println("|\tSTATUS: " + statusToString(status));
-        System.out.println("+------------------------");
+        System.out.println("+------------------------\n");
 
-        if (readWriteHead != null) {
-            System.out.println("The TM transitioned " + transitionCounter + " times!");
-            System.out.println(tape.toString());
+        if (tape != null) {
+            System.out.println("The TM transitioned " + transitionCounter + " times!\n");
+            System.out.println(tape.toString() + "\n");
         }
-
     }
 
+    /**
+     * @param status    status to convert to String
+     * @return          String equivalent of status
+     */
     public static String statusToString(Status status) {
         switch (status) {
             case Rejected:
@@ -115,18 +136,16 @@ public class UTM {
         }
     }
 
-    public void start() {
-        status = Status.Working;
-    }
-
-    protected void setState(State state) {
-        this.state = state;
-    }
-
+    /**
+     * @param status    sets the status of the machine
+     */
     public void setStatus(Status status) {
         this.status = status;
     }
 
+    /**
+     * @return  returns the tape that the UTM is using.
+     */
     public Tape getTape() {
         return tape;
     }
