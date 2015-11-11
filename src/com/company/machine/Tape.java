@@ -1,8 +1,8 @@
 package com.company.machine;
 
-import com.company.util.TwoWayArrayList;
+import com.company.util.TapeSection;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Tape simulates the Turing Machine Tape. This is also where the input language and blank symbol is defined.
@@ -16,19 +16,40 @@ import java.util.ArrayList;
 public class Tape {
 
     // Define tape alphabet (Binary)
-    private static final char[] ALPHABET = new char[]{'0', '1'};
+    private HashSet<Character> alphabet;
     public static final char BLANK = '_';
+    private TapeSection leftMostSection;
+    private TapeSection tape;
 
-    // Positive tape is used to simulate tape in the positive direction
-    private TwoWayArrayList<Character> tape;
 
-    public Tape(ArrayList<Character> input, char defaultCharacter) throws CharacterNotInAlphabetException {
+    public static TapeSection fromArray(char[] values) {
+        TapeSection tapeSection = null;
+        for (char value : values) {
+            tapeSection = new TapeSection(tapeSection, null, value);
+        }
+        return tapeSection;
+    }
+
+    public Tape(TapeSection input, char defaultCharacter) throws CharacterNotInAlphabetException {
+        alphabet = new HashSet<Character>();
+        alphabet.add('0');
+        alphabet.add('1');
+
         if (validAlphabet(input)) {
-            tape = new TwoWayArrayList<Character>(input);
-            tape.setDefaultValue(defaultCharacter);
+            leftMostSection = getLeftMostSection(input);
+            tape = leftMostSection;
+            TapeSection.setDefaultValue(defaultCharacter);
         } else {
             throw new CharacterNotInAlphabetException("An invalid character was supplied as input");
         }
+    }
+
+    private TapeSection getLeftMostSection(TapeSection tape) {
+        TapeSection tapeSection = tape;
+        while (tapeSection.hasPrev()) {
+            tapeSection = tapeSection.getPrevTapeSection();
+        }
+        return tapeSection;
     }
 
     /**
@@ -38,31 +59,37 @@ public class Tape {
      * @param input  initial tape values
      * @throws CharacterNotInAlphabetException  if any character in the given input is not included in defined ALPHABET
      */
-    public Tape(ArrayList<Character> input) throws CharacterNotInAlphabetException {
+    public Tape(TapeSection input) throws CharacterNotInAlphabetException {
         this(input, BLANK);
     }
 
-    /**
-     * Gets the character at the given position
-     *
-     * Note: If the position is outside of the ArrayList a blank is returned
-     *
-     * @param position  position to return
-     * @return          character at given position
-     */
-    public char get(int position) {
-        char value = tape.get(position);
-        return value;
+    public void moveLeft() {
+        if (tape.hasPrev()) {
+            tape = tape.getPrevTapeSection();
+        } else {
+            tape = new TapeSection(null, tape);
+            leftMostSection = tape;
+        }
+    }
+    public void moveRight() {
+        if (tape.hasNext()) {
+            tape = tape.getNextTapeSection();
+        } else {
+            tape = new TapeSection(tape, null);
+        }
+    }
+
+    public char get() {
+        return tape.getValue();
     }
 
     /**
      * Sets the character at the position to newCharacter
      *
-     * @param position      position on positiveTape to update
-     * @param newCharacter  character to write
+     * @param value character to write
      */
-    public void set(int position, char newCharacter) {
-        tape.set(position, newCharacter);
+    public void set(char value) {
+        tape.setValue(value);
     }
 
     /**
@@ -73,10 +100,11 @@ public class Tape {
     public String toString() {
         String tapeString = "...| ";
 
-        Character[] output = tape.toArray(new Character[tape.size()]);
+        TapeSection tapeSection = leftMostSection;
 
-        for (Character c : output) {
-            tapeString += c + " | ";
+        while (tapeSection != null) {
+            tapeString += tapeSection.getValue() + " | ";
+            tapeSection = tapeSection.getNextTapeSection();
         }
 
         return tapeString.substring(0, tapeString.length() - 1) + "...";
@@ -88,12 +116,25 @@ public class Tape {
      * @param input input to check
      * @return      true if all characters are valid
      */
-    private boolean validAlphabet(ArrayList<Character> input) {
-        for (char character : input) {
-            if ( ! isInAlphabet(character)) {
+    private boolean validAlphabet(TapeSection input) {
+        TapeSection currentSection = input;
+
+        while(currentSection != null) {
+            if (! isInAlphabet(currentSection.getValue())) {
                 return false;
             }
+            currentSection = currentSection.getNextTapeSection();
         }
+
+        currentSection = input.getPrevTapeSection();
+
+        while(currentSection != null) {
+            if (! isInAlphabet(currentSection.getValue())) {
+                return false;
+            }
+            currentSection = currentSection.getPrevTapeSection();
+        }
+
         return true;
     }
 
@@ -104,12 +145,7 @@ public class Tape {
      * @return          true if character is in alphabet
      */
     private boolean isInAlphabet(char character) {
-        for (char validCharacter : ALPHABET) {
-            if (character == validCharacter) {
-                return true;
-            }
-        }
-        return false;
+        return alphabet.contains(character);
     }
 
     /**
@@ -117,13 +153,14 @@ public class Tape {
      * @param targetChar    character to be counted
      * @return              occurrences of character
      */
-    public int countCharcter(char targetChar) {
-        Character[] chars = tape.toArray(new Character[tape.size()]);
+    public int countCharacter(char targetChar) {
         int counter = 0;
-        for (Character c : chars) {
-            if (c == targetChar) {
+        TapeSection tapeSection = leftMostSection;
+
+        while (tapeSection != null) {
+            if (tapeSection.getValue() == targetChar)
                 counter++;
-            }
+            tapeSection = tapeSection.getNextTapeSection();
         }
         return counter;
     }

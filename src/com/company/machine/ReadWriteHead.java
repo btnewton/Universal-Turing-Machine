@@ -7,13 +7,12 @@ package com.company.machine;
 public class ReadWriteHead {
 
     // Directions head can move
-    public static enum Direction {
+    public enum Direction {
         Left,
         Right
     }
 
     private Tape tape;
-    private int position;
 
     /**
      * Accepts tape and initializes starting position of head.
@@ -21,7 +20,6 @@ public class ReadWriteHead {
      */
     public ReadWriteHead(Tape tape) {
         this.tape = tape;
-        position = 0;
     }
 
     /**
@@ -30,9 +28,9 @@ public class ReadWriteHead {
      */
     public void moveHead(Direction move) {
         if (move.equals(Direction.Left)) {
-            position--;
+            tape.moveLeft();
         } else {
-            position++;
+            tape.moveRight();
         }
     }
 
@@ -41,7 +39,7 @@ public class ReadWriteHead {
      * @return  character found in cell
      */
     public char read() {
-        return tape.get(position);
+        return tape.get();
     }
 
     /**
@@ -49,7 +47,7 @@ public class ReadWriteHead {
      * @param newCharacter  character to write
      */
     public void write(char newCharacter) {
-        tape.set(position, newCharacter);
+        tape.set(newCharacter);
     }
 
     /**

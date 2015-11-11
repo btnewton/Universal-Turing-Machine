@@ -5,10 +5,7 @@ import com.company.machine.ReadWriteHead;
 import com.company.machine.Tape;
 import com.company.state.State;
 import com.company.state.Transition;
-import com.sun.xml.internal.ws.api.pipe.FiberContextSwitchInterceptor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.company.util.TapeSection;
 
 /**
  * UTM is a Universal Turing Machine that accepts an arbitrary number of states and input length.
@@ -29,15 +26,15 @@ public class UTM {
     /**
      * Creates a new UTM with TM M and a tape filled with w
      * @param M TM
-     * @param w universal tape character
+     * @param input universal tape character
      */
-    public UTM(State M, char w) {
+    public UTM(State M, char input) {
         status = Status.Waiting;
         state = M;
         state.setUTM(this);
 
         try {
-            tape = new Tape(new ArrayList<Character>(Arrays.asList(new Character[]{w})), w);
+            tape = new Tape(new TapeSection(null, null, input), input);
             run();
         } catch (CharacterNotInAlphabetException e) {
             e.printStackTrace();
@@ -48,16 +45,16 @@ public class UTM {
      * Creates a new UTM with TM M and string (character array) w
      *
      * @param M TM
-     * @param w input string
+     * @param input input string
      */
-    public UTM(State M, Character[] w) {
+    public UTM(State M, char[] input) {
         // Has not started and is not working yet
         status = Status.Waiting;
         state = M;
         state.setUTM(this);
 
         try {
-            tape = new Tape(new ArrayList<Character>(Arrays.asList(w)));
+            tape = new Tape(Tape.fromArray(input));
             run();
         } catch (CharacterNotInAlphabetException e) {
             e.printStackTrace();

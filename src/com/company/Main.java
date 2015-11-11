@@ -38,9 +38,9 @@ public class Main {
                     break;
                 case 1:
                     try{
-                        System.out.print("\nCalculating m - n.\nPlease enter a int for n: ");
+                        System.out.print("\nCalculating m - n.\nPlease enter an int for m: ");
                         int m = scanner.nextInt();
-                        System.out.print("\nCalculating " + m + " - n.\nPlease enter a int for n: ");
+                        System.out.print("\nCalculating " + m + " - n.\nPlease enter an int for n: ");
                         int n = scanner.nextInt();
                         subtractionUTM(m, n);
                     } catch (InputMismatchException ime){
@@ -85,7 +85,7 @@ public class Main {
         q2.addTransition(new Transition('1', '1', ReadWriteHead.Direction.Left, q0));
 
         UTM utm = new UTM(q0, '0');
-        System.out.println(utm.getTape().countCharcter('1') + " ones were written!");
+        System.out.println(utm.getTape().countCharacter('1') + " ones were written!");
 
     }
 
@@ -112,7 +112,7 @@ public class Main {
         q3.addTransition(new Transition('1', '0', ReadWriteHead.Direction.Right, q0));
 
         UTM utm = new UTM(q0, '0');
-        System.out.println(utm.getTape().countCharcter('1') + " ones were written!");
+        System.out.println(utm.getTape().countCharacter('1') + " ones were written!");
     }
 
     /**
@@ -142,7 +142,7 @@ public class Main {
         q4.addTransition(new Transition('1', '0', ReadWriteHead.Direction.Right, q2));
 
         UTM utm = new UTM(q0, '0');
-        System.out.println(utm.getTape().countCharcter('1') + " ones were written!");
+        System.out.println(utm.getTape().countCharacter('1') + " ones were written!");
     }
 
     /**
@@ -162,7 +162,7 @@ public class Main {
 
 
         UTM utm = new UTM(q0, '0');
-        System.out.println(utm.getTape().countCharcter('1') + " ones were written!");
+        System.out.println(utm.getTape().countCharacter('1') + " ones were written!");
     }
 
     /**
@@ -208,7 +208,7 @@ public class Main {
         q5.addTransition(new Transition('1', Tape.BLANK, ReadWriteHead.Direction.Right, q5));
 
         // Encode input
-        Character[] input = new Character[m + 1 + n];
+        char[] input = new char[m + 1 + n];
 
         for (int i = 0; i < m; i++) {
             input[i] = '0';
@@ -223,6 +223,6 @@ public class Main {
         UTM utm = new UTM(q0, input);
 
         // Translate output
-        System.out.println(utm.getTape().countCharcter('0') + " = " + m + " monus " + n + "!");
+        System.out.println(utm.getTape().countCharacter('0') + " = " + m + " monus " + n + "!");
     }
 }
